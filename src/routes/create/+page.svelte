@@ -92,8 +92,9 @@
       </div>
       <form on:submit|preventDefault={handleSubmit} class="p-4 space-y-4">
         <div>
-          <label class="block text-sm mb-1">Title</label>
+          <label for="party-title" class="block text-sm mb-1">Title</label>
           <input
+            id="party-title"
             type="text"
             bind:value={title}
             required
@@ -104,8 +105,9 @@
         </div>
 
         <div>
-          <label class="block text-sm mb-1">Date</label>
+          <label for="party-date" class="block text-sm mb-1">Date</label>
           <input
+            id="party-date"
             type="datetime-local"
             bind:value={startDate}
             min={minDate}
@@ -115,8 +117,9 @@
         </div>
 
         <div>
-          <label class="block text-sm mb-1">Location</label>
+          <label for="party-location" class="block text-sm mb-1">Location</label>
           <input
+            id="party-location"
             type="text"
             bind:value={location}
             required
@@ -127,8 +130,9 @@
         </div>
 
         <div>
-          <label class="block text-sm mb-1">Description</label>
+          <label for="party-description" class="block text-sm mb-1">Description</label>
           <div
+            id="party-description"
             contenteditable="true"
             bind:textContent={description}
             class="w-full border-2 border-black p-2 h-24 outline-none"

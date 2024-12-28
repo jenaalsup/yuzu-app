@@ -78,7 +78,7 @@
         
         {#if !showVerificationInput}
           <div>
-            <label class="block text-sm mb-1">Phone Number</label>
+            <label for="phone" class="block text-sm mb-1">Phone Number</label>
             <input
               type="tel"
               bind:value={phoneNumber}
@@ -99,7 +99,7 @@
           </button>
         {:else}
           <div>
-            <label class="block text-sm mb-1">Verification Code</label>
+            <label for="phone" class="block text-sm mb-1">Verification Code</label>
             <input
               type="text"
               bind:value={verificationCode}
