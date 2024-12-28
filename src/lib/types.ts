@@ -12,7 +12,7 @@ export interface Party {
 
 export interface User {
   uid: string;
-  email: string;
-  displayName: string;
+  phoneNumber: string;
+  displayName?: string;
   photoURL?: string;
 }

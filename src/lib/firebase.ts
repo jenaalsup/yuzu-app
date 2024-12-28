@@ -1,23 +1,28 @@
 import { initializeApp, getApps } from 'firebase/app';
-import { getDatabase } from 'firebase/database';
-import { getAuth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
+import { getAuth, setPersistence, inMemoryPersistence } from 'firebase/auth';
+import { getStorage } from 'firebase/storage';
+import {
+	PUBLIC_FIREBASE_API_KEY,
+	PUBLIC_FIREBASE_AUTH_DOMAIN,
+	PUBLIC_FIREBASE_PROJECT_ID,
+	PUBLIC_FIREBASE_STORAGE_BUCKET,
+	PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+	PUBLIC_FIREBASE_APP_ID
+} from '$env/static/public';
 
-const firebaseConfig = {
-    apiKey: import.meta.env.PUBLIC_FIREBASE_API_KEY,
-    authDomain: import.meta.env.PUBLIC_FIREBASE_AUTH_DOMAIN,
-    projectId: import.meta.env.PUBLIC_FIREBASE_PROJECT_ID,
-    storageBucket: import.meta.env.PUBLIC_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: import.meta.env.PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-    appId: import.meta.env.PUBLIC_FIREBASE_APP_ID,
-    databaseURL: "https://yuzu-app-8b8cc-default-rtdb.firebaseio.com",
+const config = {
+	apiKey: PUBLIC_FIREBASE_API_KEY,
+	authDomain: PUBLIC_FIREBASE_AUTH_DOMAIN,
+	projectId: PUBLIC_FIREBASE_PROJECT_ID,
+	storageBucket: PUBLIC_FIREBASE_STORAGE_BUCKET,
+	messagingSenderId: PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+	appId: PUBLIC_FIREBASE_APP_ID
 };
 
-
-// Only initialize Firebase if we're in the browser
-const app = typeof window !== 'undefined' 
-    ? (getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0])
-    : undefined;
-
-// Only initialize services if app exists
-export const db = app ? getDatabase(app) : undefined;
-export const auth = app ? getAuth(app) : undefined;
+export const app = getApps().length ? getApps()[0] : initializeApp(config);
+export const db = getFirestore(app);
+export const auth = getAuth(app);
+auth.useDeviceLanguage();
+export const storage = getStorage(app);
+setPersistence(auth, inMemoryPersistence);

@@ -4,16 +4,19 @@
   import { auth } from '$lib/firebase';
   import { user } from '$lib/stores/auth';
   import { onAuthStateChanged } from 'firebase/auth';
+  import { browser } from '$app/environment';
 
   let { children } = $props();
 
   onMount(() => {
+    if (!browser) return;
+    
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
         user.set({
           uid: firebaseUser.uid,
-          email: firebaseUser.email || '',
-          displayName: firebaseUser.displayName || '',
+          phoneNumber: firebaseUser.phoneNumber || '',
+          displayName: firebaseUser.displayName || undefined,
           photoURL: firebaseUser.photoURL || undefined
         });
       } else {
