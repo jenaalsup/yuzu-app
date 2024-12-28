@@ -8,6 +8,7 @@ export interface Party {
   requireApproval: boolean;
   createdBy: string;
   createdAt: number;
+  guests: string[]; 
 }
 
 export interface User {

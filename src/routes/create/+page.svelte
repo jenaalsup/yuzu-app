@@ -7,8 +7,7 @@
   import { goto } from '$app/navigation';
 
   let title = '';
-  let startDate = '';
-  let startTime = '';
+  let dateTime = '';  // Change from separate date/time fields
   let location = '';
   let description = '';
   let requireApproval = false;
@@ -22,7 +21,11 @@
   const minDate = generateDateTimeLocal(new Date());
 
   async function handleSubmit() {
-    if (!title.trim() || !startDate || !startTime || !location.trim()) return;
+    console.log('Auth state:', auth.currentUser);
+    console.log('User store:', get(user));
+    console.log('Database instance:', db);
+    
+    if (!title.trim() || !dateTime || !location.trim()) return;
 
     const currentUser = get(user);
     if (!currentUser) {
@@ -30,29 +33,42 @@
       return;
     }
 
-    const party: Partial<Party> = {
-      title,
-      startDate,
-      startTime,
-      location,
-      description,
-      requireApproval,
-      createdAt: Date.now(),
-      createdBy: currentUser.uid
-    };
+    // Parse the datetime-local value into date and time
+    const date = new Date(dateTime);
+    const startDate = date.toISOString().split('T')[0];
+    const startTime = date.toTimeString().split(' ')[0];
 
     try {
-      await addDoc(collection(db, 'parties'), party);
+      const party = {
+        id: '',
+        title: title.trim(),
+        startDate,
+        startTime,
+        location: location.trim(),
+        description: description.trim() || '',
+        requireApproval,
+        createdAt: Date.now(),
+        createdBy: currentUser.uid,
+        guests: [currentUser.uid]  // Initialize with creator as a guest
+      };
+
+      console.log('Creating party with data:', party);
+      // Remove the Partial<Party> type since we're providing all fields
+      const docRef = await addDoc(collection(db, 'parties'), party);
+      console.log('Party created with ID:', docRef.id);
       
       // Reset form
       title = '';
-      startDate = '';
-      startTime = '';
+      dateTime = '';
       location = '';
       description = '';
       requireApproval = false;
+
+      // Redirect to parties list or show success message
+      alert('Party created successfully!');
     } catch (error) {
       console.error('Error creating party:', error);
+      alert('Failed to create party. Please try again.');
     }
   }
 
@@ -105,11 +121,11 @@
         </div>
 
         <div>
-          <label for="party-date" class="block text-sm mb-1">Date</label>
+          <label for="party-date" class="block text-sm mb-1">Date and Time</label>
           <input
             id="party-date"
             type="datetime-local"
-            bind:value={startDate}
+            bind:value={dateTime}
             min={minDate}
             required
             class="w-full border-2 border-black p-2"
@@ -164,16 +180,17 @@
 </div>
 
 <style>
-  input[type="datetime-local"]::-webkit-calendar-picker-indicator {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    right: 0;
-    background: none;
+  input[type="datetime-local"] {
+    position: relative;
   }
-
-  [contenteditable]:empty:before {
-    content: attr(data-placeholder);
-    color: #71717a;
+  
+  input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    position: absolute;
+    right: 8px;
+    width: 20px;
+    height: 20px;
+    padding: 4px;
+    z-index: 1;
   }
 </style>
