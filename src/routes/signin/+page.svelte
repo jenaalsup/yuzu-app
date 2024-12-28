@@ -22,12 +22,34 @@
       }
       console.log('Sending code to:', formattedPhone);
       
-      // Initialize reCAPTCHA
+      /*// Initialize reCAPTCHA
       recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
         size: 'normal'
       });
 
-      await recaptchaVerifier.render();
+      await recaptchaVerifier.render();*/
+
+
+      // Initialize reCAPTCHA
+      recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+        size: 'normal',
+        callback: () => {
+          console.log('reCAPTCHA solved');
+        },
+        'expired-callback': () => {
+          error = 'reCAPTCHA expired, please try again';
+          recaptchaVerifier?.clear();
+          recaptchaVerifier = null;
+        }
+      });
+
+      try {
+        await recaptchaVerifier.render();
+      } catch (e) {
+        console.error('reCAPTCHA render error:', e);
+        error = 'Failed to initialize reCAPTCHA';
+        return;
+      }
       
       confirmationResult = await signInWithPhoneNumber(
         auth,
