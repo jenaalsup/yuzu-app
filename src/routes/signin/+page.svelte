@@ -1,9 +1,10 @@
 <script lang="ts">
   import { auth } from '$lib/firebase';
-  import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
+  import { RecaptchaVerifier, signInWithPhoneNumber, updateProfile } from 'firebase/auth';
   import { goto } from '$app/navigation';
 
   let phoneNumber = '';
+  let displayName = '';
   let verificationCode = '';
   let error = '';
   let showVerificationInput = false;
@@ -13,24 +14,18 @@
   async function handleSendCode() {
     try {
       error = '';
+      if (!displayName.trim()) {
+        error = 'Please enter your name';
+        return;
+      }
+
       if (!auth) throw new Error('Auth not initialized');
 
-      // Format phone number to remove any non-digit characters except +
       let formattedPhone = phoneNumber.replace(/[^\d+]/g, '');
       if (!formattedPhone.startsWith('+')) {
         formattedPhone = '+1' + formattedPhone;
       }
-      console.log('Sending code to:', formattedPhone);
-      
-      /*// Initialize reCAPTCHA
-      recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-        size: 'normal'
-      });
 
-      await recaptchaVerifier.render();*/
-
-
-      // Initialize reCAPTCHA
       recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
         size: 'normal',
         callback: () => {
@@ -43,13 +38,7 @@
         }
       });
 
-      try {
-        await recaptchaVerifier.render();
-      } catch (e) {
-        console.error('reCAPTCHA render error:', e);
-        error = 'Failed to initialize reCAPTCHA';
-        return;
-      }
+      await recaptchaVerifier.render();
       
       confirmationResult = await signInWithPhoneNumber(
         auth,
@@ -69,8 +58,14 @@
       error = '';
       if (!confirmationResult) throw new Error('No confirmation result');
       
-      await confirmationResult.confirm(verificationCode);
-      goto('/create');
+      const userCredential = await confirmationResult.confirm(verificationCode);
+      await updateProfile(userCredential.user, {
+        displayName: displayName.trim()
+      });
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const redirectUrl = urlParams.get('redirect') || '/create';
+      goto(redirectUrl);
     } catch (e) {
       error = 'Invalid verification code';
       console.error('Verification error:', e);
@@ -100,6 +95,17 @@
         
         {#if !showVerificationInput}
           <div>
+            <label for="name" class="block text-sm mb-1">Your Name</label>
+            <input
+              type="text"
+              bind:value={displayName}
+              placeholder="Enter your name"
+              required
+              class="w-full border-2 border-black p-2"
+            />
+          </div>
+
+          <div>
             <label for="phone" class="block text-sm mb-1">Phone Number</label>
             <input
               type="tel"
@@ -110,7 +116,6 @@
             />
           </div>
 
-          <!-- reCAPTCHA will be rendered here -->
           <div id="recaptcha-container"></div>
 
           <button 
@@ -121,7 +126,7 @@
           </button>
         {:else}
           <div>
-            <label for="phone" class="block text-sm mb-1">Verification Code</label>
+            <label for="code" class="block text-sm mb-1">Verification Code</label>
             <input
               type="text"
               bind:value={verificationCode}

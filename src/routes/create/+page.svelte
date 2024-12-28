@@ -24,7 +24,7 @@
     console.log('Auth state:', auth.currentUser);
     console.log('User store:', get(user));
     console.log('Database instance:', db);
-    
+
     if (!title.trim() || !dateTime || !location.trim()) return;
 
     const currentUser = get(user);
@@ -49,13 +49,18 @@
         requireApproval,
         createdAt: Date.now(),
         createdBy: currentUser.uid,
-        guests: [currentUser.uid]  // Initialize with creator as a guest
+        guests: {
+          [currentUser.uid]: {
+            status: 'yes',
+            timestamp: Date.now()
+          }
+        }
       };
 
       console.log('Creating party with data:', party);
-      // Remove the Partial<Party> type since we're providing all fields
       const docRef = await addDoc(collection(db, 'parties'), party);
       console.log('Party created with ID:', docRef.id);
+      goto(`/party/${docRef.id}`);
       
       // Reset form
       title = '';

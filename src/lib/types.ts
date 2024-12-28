@@ -8,12 +8,17 @@ export interface Party {
   requireApproval: boolean;
   createdBy: string;
   createdAt: number;
-  guests: string[]; 
+  guests: {
+    [uid: string]: {
+      status: 'yes' | 'maybe' | 'no';
+      timestamp: number;
+    }
+  };
 }
 
 export interface User {
   uid: string;
   phoneNumber: string;
-  displayName?: string;
+  displayName: string;
   photoURL?: string;
 }
