@@ -87,29 +87,8 @@
           {#if party.description}
             <p class="mt-4">{party.description}</p>
           {/if}
-
-          <!-- Activity section -->
-          <div class="mt-4 border-t-2 border-black pt-4">
-            <div class="flex justify-between items-center mb-4">
-              <h2 class="font-medium">Activity</h2>
-              <div class="text-sm">{Object.keys(party.guests || {}).length} attending</div>
-            </div>
-            
-            {#each Object.entries(party.guests || {}) as [uid, guestData]}
-              <div class="flex items-center gap-2 py-2">
-                <div class="w-8 h-8 bg-gray-200 rounded-full"></div>
-                <div>
-                  <div class="text-sm font-medium">
-                    {uid === party.createdBy ? party.createdByName : guestData.displayName || 'Guest'}
-                  </div>
-                  <div class="text-sm text-gray-500">
-                    is {guestData.status}
-                  </div>
-                </div>
-              </div>
-            {/each}
-          </div>
-
+        </div>
+        
         <div class="border-t-2 border-black">
           {#if !$user}
             <button 
