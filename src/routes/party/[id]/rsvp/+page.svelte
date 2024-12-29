@@ -74,38 +74,38 @@
         </div>
 
         <div class="border-t-2 border-black">
-          {#if !get(user)}
+          {#if !$user}
             <button 
               class="w-full p-4 hover:bg-gray-100"
               on:click={() => goto(`/signin?redirect=/party/${partyId}/rsvp`)}
             >
               Sign in to RSVP
             </button>
-          {:else if get(user)?.uid === party?.createdBy}
+          {:else if $user?.uid === party?.createdBy}
             <div class="p-4 text-center text-gray-600">
               You're the host!
             </div>
           {:else if userRsvpStatus}
             <div class="p-4 text-center">
-              {getRsvpStatusText(userRsvpStatus)}
+              You're {userRsvpStatus === 'maybe' ? 'maybe going' : userRsvpStatus}!
             </div>
           {:else}
             <div class="grid grid-cols-3">
               <button 
                 class="p-4 hover:bg-gray-100 border-r-2 border-black"
-                on:click={() => handleRSVP('yes')}
+                on:click={() => handleRsvp('yes')}
               >
                 Yes
               </button>
               <button 
                 class="p-4 hover:bg-gray-100 border-r-2 border-black"
-                on:click={() => handleRSVP('maybe')}
+                on:click={() => handleRsvp('maybe')}
               >
                 Maybe
               </button>
               <button 
                 class="p-4 hover:bg-gray-100"
-                on:click={() => handleRSVP('no')}
+                on:click={() => handleRsvp('no')}
               >
                 No
               </button>

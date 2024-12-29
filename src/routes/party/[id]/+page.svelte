@@ -95,7 +95,6 @@
               </a>
             </div>
 
-            <!-- In your template, update the delete button: -->
             {#if isHost}
               <button 
                 on:click={handleDelete}
@@ -103,7 +102,6 @@
                 disabled={isDeleting}
               >
                 {#if isDeleting}
-                  <!-- You could add a loading spinner here -->
                   ⏳
                 {:else}
                   🗑️

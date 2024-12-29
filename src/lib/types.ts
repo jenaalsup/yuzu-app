@@ -7,7 +7,7 @@ export interface Party {
   description: string;
   requireApproval: boolean;
   createdBy: string;
-  createdByName: string;  // Add this line
+  createdByName: string; 
   createdAt: number;
   guests: {
     [uid: string]: {
