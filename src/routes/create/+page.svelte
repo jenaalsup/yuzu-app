@@ -3,7 +3,6 @@
   import { collection, addDoc } from 'firebase/firestore';
   import type { Party } from '$lib/types';
   import { user } from '$lib/stores/auth';
-  import { get } from 'svelte/store';
   import { goto } from '$app/navigation';
 
   let title = '';
@@ -21,14 +20,9 @@
   const minDate = generateDateTimeLocal(new Date());
 
   async function handleSubmit() {
-    console.log('Auth state:', auth.currentUser);
-    console.log('User store:', get(user));
-    console.log('Database instance:', db);
-
     if (!title.trim() || !dateTime || !location.trim()) return;
 
-    const currentUser = get(user);
-    if (!currentUser) {
+    if (!$user) {
       goto('/signin');
       return;
     }
@@ -46,15 +40,13 @@
         location: location.trim(),
         description: description.trim(),
         requireApproval,
-        createdBy: currentUser.uid,
-        createdByName: currentUser.displayName,  // Add this line
+        createdBy: $user.uid,
+        createdByName: $user.displayName,
         createdAt: Date.now(),
         guests: {}
       };
 
-      console.log('Creating party with data:', party);
       const docRef = await addDoc(collection(db, 'parties'), party);
-      console.log('Party created with ID:', docRef.id);
       goto(`/party/${docRef.id}`);
       
       // Reset form
@@ -64,21 +56,10 @@
       description = '';
       requireApproval = false;
 
-      // Redirect to parties list or show success message
       alert('Party created successfully!');
     } catch (error) {
       console.error('Error creating party:', error);
       alert('Failed to create party. Please try again.');
-    }
-  }
-
-  async function handleSignOut() {
-    if (!auth) return;
-    try {
-      await auth.signOut();
-      goto('/signin');
-    } catch (error) {
-      console.error('Error signing out:', error);
     }
   }
 </script>

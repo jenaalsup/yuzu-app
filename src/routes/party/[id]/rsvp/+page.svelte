@@ -1,74 +1,43 @@
 <script lang="ts">
   import { db } from '$lib/firebase';
-  import { doc, getDoc, updateDoc } from 'firebase/firestore';
+  import { doc, updateDoc } from 'firebase/firestore';
   import { page } from '$app/stores';
   import { onMount } from 'svelte';
   import type { Party } from '$lib/types';
   import { user } from '$lib/stores/auth';
-  import { get } from 'svelte/store';
   import { goto } from '$app/navigation';
+  import { loadParty } from '$lib/utils/party';
 
   let party: Party | null = null;
   let error = '';
   let userRsvpStatus: 'yes' | 'maybe' | 'no' | null = null;
-  const partyId = $page.params.id;  
-
+  const partyId = $page.params.id;
 
   onMount(async () => {
-    try {
-      const partyDoc = await getDoc(doc(db, 'parties', partyId));
-      
-      if (partyDoc.exists()) {
-        party = { id: partyDoc.id, ...partyDoc.data() } as Party;
-        const currentUser = get(user);
-        if (currentUser) {
-          userRsvpStatus = party.guests[currentUser.uid]?.status || null;
-        }
-      } else {
-        error = 'Party not found';
-      }
-    } catch (e) {
-      console.error('Error loading party:', e);
-      error = 'Error loading party';
+    const result = await loadParty(partyId);
+    party = result.party;
+    error = result.error;
+
+    if (party && $user) {
+      userRsvpStatus = party.guests[$user.uid]?.status || null;
     }
   });
 
-  async function handleRSVP(choice: 'yes' | 'maybe' | 'no') {
-    if (!party) return;
-    
-    const currentUser = get(user);
-    if (!currentUser) {
-      goto(`/signin?redirect=/party/${partyId}/rsvp`);
-      return;
-    }
-
-    // Don't allow host to RSVP
-    if (currentUser.uid === party.createdBy) {
-      error = "You're the host!";
-      return;
-    }
+  async function handleRsvp(status: 'yes' | 'maybe' | 'no') {
+    if (!party || !$user) return;
 
     try {
       const partyRef = doc(db, 'parties', partyId);
       await updateDoc(partyRef, {
-        [`guests.${currentUser.uid}`]: {
-          status: choice,
+        [`guests.${$user.uid}`]: {
+          status,
           timestamp: Date.now()
         }
       });
-      
-      userRsvpStatus = choice;
-    } catch (error) {
-      console.error('Error submitting RSVP:', error);
-    }
-  }
-
-  function getRsvpStatusText(status: string) {
-    switch (status) {
-      case 'yes': return "You're going!";
-      case 'maybe': return "You might go";
-      case 'no': return "You can't make it";
-      default: return '';
+      userRsvpStatus = status;
+    } catch (e) {
+      console.error('Error updating RSVP:', e);
+      error = 'Error updating RSVP';
     }
   }
 </script>

@@ -1,12 +1,12 @@
 <script lang="ts">
   import { db } from '$lib/firebase';
-  import { doc, getDoc, deleteDoc } from 'firebase/firestore';
+  import { deleteDoc, doc } from 'firebase/firestore';
   import { page } from '$app/stores';
   import { onMount } from 'svelte';
   import type { Party } from '$lib/types';
   import { user } from '$lib/stores/auth';
-  import { browser } from '$app/environment';
   import { goto } from '$app/navigation';
+  import { loadParty } from '$lib/utils/party';
 
   const partyId = $page.params.id;
   let party: Party | null = null;
@@ -14,24 +14,14 @@
   let isHost = false;
 
   onMount(async () => {
-    try {
-      const partyRef = doc(db, 'parties', partyId);
-      const partyDoc = await getDoc(partyRef);
-      
-      if (partyDoc.exists()) {
-        party = { id: partyDoc.id, ...partyDoc.data() } as Party;
-        isHost = $user?.uid === party.createdBy;
-        
-        // If not host and not authenticated, redirect to RSVP page
-        if (!isHost && !$user) {
-          goto(`/party/${partyId}/rsvp`);
-        }
-      } else {
-        error = 'Party not found';
-      }
-    } catch (e) {
-      console.error('Error loading party:', e);
-      error = 'Error loading party';
+    const result = await loadParty(partyId);
+    party = result.party;
+    error = result.error;
+    isHost = result.isHost;
+
+    // If not host and not authenticated, redirect to RSVP page
+    if (!isHost && !$user) {
+      goto(`/party/${partyId}/rsvp`);
     }
   });
 
