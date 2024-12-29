@@ -13,6 +13,7 @@ export interface Party {
     [uid: string]: {
       status: 'yes' | 'maybe' | 'no';
       timestamp: number;
+      displayName?: string;
     }
   };
 }

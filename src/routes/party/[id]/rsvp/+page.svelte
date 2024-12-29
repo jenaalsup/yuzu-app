@@ -28,10 +28,13 @@
 
     try {
       const partyRef = doc(db, 'parties', partyId);
+      const guestName = $user.displayName || 'Guest';
+      
       await updateDoc(partyRef, {
         [`guests.${$user.uid}`]: {
           status,
-          timestamp: Date.now()
+          timestamp: Date.now(),
+          displayName: guestName
         }
       });
       userRsvpStatus = status;
@@ -87,7 +90,7 @@
             </div>
           {:else if userRsvpStatus}
             <div class="p-4 text-center">
-              You're {userRsvpStatus === 'maybe' ? 'maybe going' : userRsvpStatus}!
+              You're a {userRsvpStatus === 'maybe' ? 'maybe going' : userRsvpStatus}!
             </div>
           {:else}
             <div class="grid grid-cols-3">

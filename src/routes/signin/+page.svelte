@@ -59,16 +59,15 @@
       if (!confirmationResult) return;
       
       const result = await confirmationResult.confirm(verificationCode);
-      await updateProfile(result.user, {
-        displayName: displayName
-      });
       
-      // Force a refresh of the auth token and user store
-      await result.user.reload();
-      auth.currentUser?.reload();
-      
-      // Wait a moment for Firebase to process the update
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Make sure we're using the current auth user
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        await updateProfile(currentUser, {
+          displayName: displayName.trim()
+        });
+        await currentUser.reload();
+      }
       
       const redirectTo = new URLSearchParams(window.location.search).get('redirect') || '/profile';
       goto(redirectTo);

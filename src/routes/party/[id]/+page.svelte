@@ -126,7 +126,7 @@
                 <div class="w-8 h-8 bg-gray-200 rounded-full"></div>
                 <div>
                   <div class="text-sm font-medium">
-                    {uid === party.createdBy ? 'Host' : 'Guest'}
+                    {uid === party.createdBy ? party.createdByName : guestData.displayName || 'Guest'}
                   </div>
                   <div class="text-sm text-gray-500">
                     is {guestData.status}
