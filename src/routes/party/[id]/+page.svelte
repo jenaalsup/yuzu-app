@@ -121,15 +121,16 @@
           </div>
           
           <div class="p-4">
-            <!-- Guest list -->
-            {#each party.guests as guestId}
+            {#each Object.entries(party.guests) as [uid, guestData]}
               <div class="flex items-center gap-2 py-2">
                 <div class="w-8 h-8 bg-gray-200 rounded-full"></div>
                 <div>
                   <div class="text-sm font-medium">
-                    {guestId === party.createdBy ? 'Host' : 'Guest'}
+                    {uid === party.createdBy ? 'Host' : 'Guest'}
                   </div>
-                  <div class="text-sm text-gray-500">is attending</div>
+                  <div class="text-sm text-gray-500">
+                    is {guestData.status}
+                  </div>
                 </div>
               </div>
             {/each}

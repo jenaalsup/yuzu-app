@@ -21,5 +21,4 @@ export interface User {
   uid: string;
   phoneNumber: string;
   displayName: string;
-  photoURL?: string;
 }

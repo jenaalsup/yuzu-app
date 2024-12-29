@@ -4,15 +4,13 @@
   import { onMount } from 'svelte';
   import { auth } from '$lib/firebase';
   import { user, authInitialized } from '$lib/stores/auth';
-  import { onAuthStateChanged } from 'firebase/auth';
+  import { onAuthStateChanged, type User as FirebaseUser } from 'firebase/auth';
   import { browser } from '$app/environment';
-
-  let { children } = $props();
 
   onMount(() => {
     if (!browser) return;
     
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser: FirebaseUser | null) => {
       if (firebaseUser) {
         user.set({
           uid: firebaseUser.uid,
@@ -33,7 +31,7 @@
   <div class="min-h-screen bg-white">
     <Header />
     <main>
-      {@render children()}
+      <slot />
     </main>
   </div>
 {:else}
