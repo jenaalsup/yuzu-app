@@ -30,6 +30,16 @@
       const partyRef = doc(db, 'parties', partyId);
       const guestName = $user.displayName || 'Guest';
       
+      // First update the local party state to show immediate feedback
+      if (!party.guests) party.guests = {};
+      party.guests[$user.uid] = {
+        status,
+        timestamp: Date.now(),
+        displayName: guestName
+      };
+      userRsvpStatus = status;
+
+      // Then update Firestore
       await updateDoc(partyRef, {
         [`guests.${$user.uid}`]: {
           status,
@@ -37,10 +47,13 @@
           displayName: guestName
         }
       });
-      userRsvpStatus = status;
     } catch (e) {
       console.error('Error updating RSVP:', e);
       error = 'Error updating RSVP';
+      
+      // Revert local state if the update failed
+      const result = await loadParty(partyId);
+      party = result.party;
     }
   }
 </script>
@@ -74,7 +87,28 @@
           {#if party.description}
             <p class="mt-4">{party.description}</p>
           {/if}
-        </div>
+
+          <!-- Activity section -->
+          <div class="mt-4 border-t-2 border-black pt-4">
+            <div class="flex justify-between items-center mb-4">
+              <h2 class="font-medium">Activity</h2>
+              <div class="text-sm">{Object.keys(party.guests || {}).length} attending</div>
+            </div>
+            
+            {#each Object.entries(party.guests || {}) as [uid, guestData]}
+              <div class="flex items-center gap-2 py-2">
+                <div class="w-8 h-8 bg-gray-200 rounded-full"></div>
+                <div>
+                  <div class="text-sm font-medium">
+                    {uid === party.createdBy ? party.createdByName : guestData.displayName || 'Guest'}
+                  </div>
+                  <div class="text-sm text-gray-500">
+                    is {guestData.status}
+                  </div>
+                </div>
+              </div>
+            {/each}
+          </div>
 
         <div class="border-t-2 border-black">
           {#if !$user}
