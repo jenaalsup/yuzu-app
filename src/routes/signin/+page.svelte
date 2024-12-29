@@ -56,19 +56,25 @@
   async function handleVerifyCode() {
     try {
       error = '';
-      if (!confirmationResult) throw new Error('No confirmation result');
+      if (!confirmationResult) return;
       
-      const userCredential = await confirmationResult.confirm(verificationCode);
-      await updateProfile(userCredential.user, {
-        displayName: displayName.trim()
+      const result = await confirmationResult.confirm(verificationCode);
+      await updateProfile(result.user, {
+        displayName: displayName
       });
-
-      const urlParams = new URLSearchParams(window.location.search);
-      const redirectUrl = urlParams.get('redirect') || '/create';
-      goto(redirectUrl);
+      
+      // Force a refresh of the auth token and user store
+      await result.user.reload();
+      auth.currentUser?.reload();
+      
+      // Wait a moment for Firebase to process the update
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const redirectTo = new URLSearchParams(window.location.search).get('redirect') || '/profile';
+      goto(redirectTo);
     } catch (e) {
+      console.error('Error verifying code:', e);
       error = 'Invalid verification code';
-      console.error('Verification error:', e);
     }
   }
 </script>
