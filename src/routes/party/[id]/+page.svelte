@@ -9,14 +9,15 @@
   import { browser } from '$app/environment';
   import { goto } from '$app/navigation';
 
+  const partyId = $page.params.id;
   let party: Party | null = null;
   let error = '';
   let isHost = false;
 
   onMount(async () => {
     try {
-      const partyId = $page.params.id;
-      const partyDoc = await getDoc(doc(db, 'parties', partyId));
+      const partyRef = doc(db, 'parties', partyId);
+      const partyDoc = await getDoc(partyRef);
       
       if (partyDoc.exists()) {
         party = { id: partyDoc.id, ...partyDoc.data() } as Party;
@@ -38,13 +39,6 @@
 </script>
 
 <div class="min-h-screen bg-white">
-  <header class="flex justify-between items-center p-4">
-    <div class="flex items-center gap-2">
-      <span class="text-xl font-bold">yuzu</span>
-      <span class="text-xl font-bold text-orange-500">party</span>
-    </div>
-  </header>
-
   <main class="max-w-4xl mx-auto p-4">
     {#if error}
       <div class="text-red-500">{error}</div>
@@ -79,12 +73,12 @@
             <div class="mt-4 text-sm">
               <span class="text-gray-600">Share: </span>
               <a 
-                href={`${window.location.origin}/party/${$page.params.id}/rsvp`}
+                href={`${window.location.origin}/party/${partyId}/rsvp`}
                 target="_blank"
                 rel="noopener noreferrer"
                 class="text-blue-600 hover:underline"
               >
-                {`${window.location.origin}/party/${$page.params.id}/rsvp`}
+                {`${window.location.origin}/party/${partyId}/rsvp`}
               </a>
             </div>
           </div>

@@ -74,13 +74,6 @@
 </script>
 
 <div class="min-h-screen bg-white">
-  <header class="flex justify-between items-center p-4">
-    <div class="flex items-center gap-2">
-      <span class="text-xl font-bold">yuzu</span>
-      <span class="text-xl font-bold text-orange-500">party</span>
-    </div>
-  </header>
-      
   <main class="max-w-md mx-auto p-4">
     <div class="border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
       <div class="border-b-2 border-black p-4">

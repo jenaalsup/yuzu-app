@@ -1,8 +1,9 @@
 <script lang="ts">
   import '../app.css';
+  import Header from '$lib/components/Header.svelte';
   import { onMount } from 'svelte';
   import { auth } from '$lib/firebase';
-  import { user } from '$lib/stores/auth';
+  import { user, authInitialized } from '$lib/stores/auth';
   import { onAuthStateChanged } from 'firebase/auth';
   import { browser } from '$app/environment';
 
@@ -22,33 +23,22 @@
       } else {
         user.set(null);
       }
+      authInitialized.set(true);
     });
 
     return unsubscribe;
   });
 </script>
 
-<div class="app">
-  <main>
-    {@render children()}
-  </main>
-</div>
-
-<style>
-  .app {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-  }
-
-  main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    padding: 1rem;
-    width: 100%;
-    max-width: 64rem;
-    margin: 0 auto;
-    box-sizing: border-box;
-  }
-</style>
+{#if $authInitialized}
+  <div class="min-h-screen bg-white">
+    <Header />
+    <main>
+      {@render children()}
+    </main>
+  </div>
+{:else}
+  <div class="min-h-screen flex items-center justify-center">
+    <div class="animate-pulse">Loading...</div>
+  </div>
+{/if}

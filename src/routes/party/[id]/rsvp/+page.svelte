@@ -74,13 +74,6 @@
 </script>
 
 <div class="min-h-screen bg-white">
-  <header class="flex justify-between items-center p-4">
-    <div class="flex items-center gap-2">
-      <span class="text-xl font-bold">yuzu</span>
-      <span class="text-xl font-bold text-orange-500">party</span>
-    </div>
-  </header>
-
   <main class="max-w-md mx-auto p-4">
     {#if error}
       <div class="text-red-500">{error}</div>
