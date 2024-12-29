@@ -40,21 +40,16 @@
 
     try {
       const party = {
-        id: '',
         title: title.trim(),
         startDate,
         startTime,
         location: location.trim(),
-        description: description.trim() || '',
+        description: description.trim(),
         requireApproval,
-        createdAt: Date.now(),
         createdBy: currentUser.uid,
-        guests: {
-          [currentUser.uid]: {
-            status: 'yes',
-            timestamp: Date.now()
-          }
-        }
+        createdByName: currentUser.displayName,  // Add this line
+        createdAt: Date.now(),
+        guests: {}
       };
 
       console.log('Creating party with data:', party);

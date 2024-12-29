@@ -95,7 +95,7 @@
 
             <div class="flex items-center gap-2">
               <span class="text-gray-600">👤</span>
-              <span>Hosted by {party.createdBy}</span>
+              <span>Hosted by {party.createdByName}</span>
             </div>
           </div>
 

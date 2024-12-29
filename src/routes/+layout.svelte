@@ -17,8 +17,7 @@
         user.set({
           uid: firebaseUser.uid,
           phoneNumber: firebaseUser.phoneNumber || '',
-          displayName: firebaseUser.displayName || undefined,
-          photoURL: firebaseUser.photoURL || undefined
+          displayName: firebaseUser.displayName || 'Unknown User'
         });
       } else {
         user.set(null);

@@ -1,11 +1,10 @@
 <script lang="ts">
   import { db } from '$lib/firebase';
-  import { doc, getDoc } from 'firebase/firestore';
+  import { doc, getDoc, deleteDoc } from 'firebase/firestore';
   import { page } from '$app/stores';
   import { onMount } from 'svelte';
   import type { Party } from '$lib/types';
   import { user } from '$lib/stores/auth';
-  import { get } from 'svelte/store';
   import { browser } from '$app/environment';
   import { goto } from '$app/navigation';
 
@@ -21,11 +20,10 @@
       
       if (partyDoc.exists()) {
         party = { id: partyDoc.id, ...partyDoc.data() } as Party;
-        const currentUser = get(user);
-        isHost = currentUser?.uid === party.createdBy;
+        isHost = $user?.uid === party.createdBy;
         
         // If not host and not authenticated, redirect to RSVP page
-        if (!isHost && !currentUser) {
+        if (!isHost && !$user) {
           goto(`/party/${partyId}/rsvp`);
         }
       } else {
@@ -36,6 +34,17 @@
       error = 'Error loading party';
     }
   });
+
+  async function handleDelete() {
+    if (!party || !confirm('Are you sure you want to delete this party?')) return;
+
+    try {
+      await deleteDoc(doc(db, 'parties', party.id));
+      goto('/profile');
+    } catch (error) {
+      console.error('Error deleting party:', error);
+    }
+  }
 </script>
 
 <div class="min-h-screen bg-white">
@@ -46,9 +55,8 @@
       <div class="grid grid-cols-[2fr,1fr] gap-4">
         <!-- Left column - Party details -->
         <div class="space-y-4">
-          <div class="border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-4">
+          <div class="border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-4 relative">
             <h1 class="text-2xl font-bold mb-4">{party.title}</h1>
-            
             <div class="space-y-2">
               <div class="flex items-center gap-2">
                 <span class="text-gray-600">📅</span>
@@ -62,7 +70,7 @@
 
               <div class="flex items-center gap-2">
                 <span class="text-gray-600">👤</span>
-                <span>Hosted by {party.createdBy}</span>
+                <span>Hosted by {party.createdByName}</span>
               </div>
             </div>
 
@@ -81,6 +89,15 @@
                 {`${window.location.origin}/party/${partyId}/rsvp`}
               </a>
             </div>
+
+            {#if isHost}
+              <button 
+                on:click={handleDelete}
+                class="absolute bottom-4 right-4 text-gray-600 hover:text-black"
+              >
+                🗑️
+              </button>
+            {/if}
           </div>
         </div>
 
