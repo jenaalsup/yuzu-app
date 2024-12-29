@@ -81,7 +81,7 @@
                 href="/party/{party.id}"
                 class="block p-4 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-shadow"
               >
-                <div class="font-medium">{party.title}</div>
+                <div class="font-medium text-pink-300 hover:text-pink-400">{party.title}</div>
                 <div class="text-sm text-gray-500">
                   {new Date(party.startDate).toLocaleDateString()} at {party.startTime}
                 </div>
@@ -103,7 +103,7 @@
                 href="/party/{party.id}"
                 class="block p-4 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-shadow"
               >
-                <div class="font-medium">{party.title}</div>
+                <div class="font-medium text-pink-300 hover:text-pink-400">{party.title}</div>
                 <div class="text-sm text-gray-500">
                   {new Date(party.startDate).toLocaleDateString()} at {party.startTime}
                 </div>

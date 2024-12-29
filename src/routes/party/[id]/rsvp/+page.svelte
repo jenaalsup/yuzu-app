@@ -45,7 +45,7 @@
 <div class="min-h-screen bg-white">
   <main class="max-w-md mx-auto p-4">
     {#if error}
-      <div class="text-red-500">{error}</div>
+      <div class="text-pink-400">{error}</div>
     {:else if party}
       <div class="border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
         <div class="p-4">

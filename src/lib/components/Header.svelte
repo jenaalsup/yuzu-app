@@ -19,24 +19,23 @@
 </script>
 
 <header class="flex justify-between items-center p-4">
-  <a href="/" class="flex items-center gap-2">
-    <span class="text-xl font-bold">yuzu</span>
-    <span class="text-xl font-bold text-orange-500">party</span>
+  <a href="/" class="flex items-center gap-2 no-underline">
+    <span class="text-xl font-bold text-pink-300 hover:text-pink-400">yuzu & me 🍋</span>
   </a>
   
   <div class="flex items-center gap-4">
-    <a href="/profile" class="text-sm hover:underline">Profile</a>
+    <a href="/profile" class="text-sm text-pink-300 hover:text-pink-400 no-underline">Profile</a>
     {#if $user}
       <button 
         on:click={handleSignOut}
-        class="text-sm hover:underline"
+        class="text-sm text-pink-300 hover:text-pink-400 no-underline"
       >
         Sign Out
       </button>
     {:else}
       <button 
         on:click={handleSignIn}
-        class="text-sm hover:underline"
+        class="text-sm text-pink-300 hover:text-pink-400 no-underline"
       >
         Sign In
       </button>

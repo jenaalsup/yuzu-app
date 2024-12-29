@@ -89,7 +89,7 @@
                 href={`${window.location.origin}/party/${partyId}/rsvp`}
                 target="_blank"
                 rel="noopener noreferrer"
-                class="text-blue-600 hover:underline"
+                class="text-pink-300 hover:text-pink-400"
               >
                 {`${window.location.origin}/party/${partyId}/rsvp`}
               </a>
