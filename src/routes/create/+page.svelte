@@ -6,7 +6,7 @@
   import { goto } from '$app/navigation';
 
   let title = '';
-  let dateTime = '';  // Change from separate date/time fields
+  let dateTime = ''; 
   let location = '';
   let description = '';
   let requireApproval = false;

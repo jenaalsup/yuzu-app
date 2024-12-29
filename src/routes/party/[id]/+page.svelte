@@ -7,11 +7,13 @@
   import { user } from '$lib/stores/auth';
   import { goto } from '$app/navigation';
   import { loadParty } from '$lib/utils/party';
+  import { browser } from '$app/environment';
 
   const partyId = $page.params.id;
   let party: Party | null = null;
   let error = '';
   let isHost = false;
+  let isDeleting = false;
 
   onMount(async () => {
     const result = await loadParty(partyId);
@@ -26,13 +28,26 @@
   });
 
   async function handleDelete() {
-    if (!party || !confirm('Are you sure you want to delete this party?')) return;
+    if (!party || isDeleting || !confirm('Are you sure you want to delete this party?')) return;
 
     try {
-      await deleteDoc(doc(db, 'parties', party.id));
+      isDeleting = true;
+      const partyRef = doc(db, 'parties', party.id);
+      
+      if (browser) {
+        party = null;
+        error = '';
+      }
+
+      await deleteDoc(partyRef);
       goto('/profile');
     } catch (error) {
       console.error('Error deleting party:', error);
+      if (browser) {
+        error = 'Failed to delete party';
+      }
+    } finally {
+      isDeleting = false;
     }
   }
 </script>
@@ -80,12 +95,19 @@
               </a>
             </div>
 
+            <!-- In your template, update the delete button: -->
             {#if isHost}
               <button 
                 on:click={handleDelete}
-                class="absolute bottom-4 right-4 text-gray-600 hover:text-black"
+                class="absolute bottom-4 right-4 text-gray-600 hover:text-black disabled:opacity-50"
+                disabled={isDeleting}
               >
-                🗑️
+                {#if isDeleting}
+                  <!-- You could add a loading spinner here -->
+                  ⏳
+                {:else}
+                  🗑️
+                {/if}
               </button>
             {/if}
           </div>
